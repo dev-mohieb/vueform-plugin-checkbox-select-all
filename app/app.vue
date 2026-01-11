@@ -17,6 +17,8 @@ const schema = {
     controls: [
       "container.reqDetailsCheckboxes",
       "container.reqFieldsCheckboxes",
+      "container.someOtherCheckboxGroup",
+      "affectedByGroupController",
     ],
   },
 
@@ -71,12 +73,45 @@ const schema = {
           { value: "2", label: "Field Created" },
         ],
       },
+      // --- GROUP 3 ---
+
+      someOtherCheckboxGroupLabel: {
+        type: "static",
+        tag: "p",
+        content: "<p>Some Other Checkbox Group</p>",
+      },
+      someOtherCheckboxGroup: {
+        type: "checkboxgroup",
+        class: "flex-container",
+        // EXTERNAL LINK: Points to Main Controller
+        controller: "selectAll",
+        items: [
+          {
+            // INTERNAL CONTROL
+            value: "0",
+            label: "All",
+            groupController: true,
+          },
+          { value: "1", label: "Field ID" },
+          { value: "2", label: "Field Created" },
+          { value: "3", label: "Field Updated" },
+          { value: "4", label: "Field Deleted" },
+          { value: "5", label: "Field Archived" },
+          { value: "6", label: "Field Restored" },
+        ],
+      },
     },
   },
 
-  saveSelections: {
+  notAffectedByGroupController: {
     type: "checkbox",
-    text: "Save My Selections",
+    text: "Checkbox that's not affected by the group controller",
+  },
+
+  affectedByGroupController: {
+    type: "checkbox",
+    text: "Checkbox that's affected by the group controller",
+    controller: "selectAll",
   },
 };
 
@@ -106,7 +141,7 @@ const formData = ref(null);
 }
 
 .wrapper {
-  padding: 2rem;
+  padding: 1rem;
   border: 1px solid #ccc;
   border-radius: 0.5rem;
   width: 100%;
@@ -115,7 +150,7 @@ const formData = ref(null);
 
 .dimBackground_50 {
   background-color: #f5f5f5;
-  padding: 2rem;
+  padding: 1rem;
   border: 1px solid #ccc;
   border-radius: 0.5rem;
 }
@@ -129,6 +164,7 @@ const formData = ref(null);
 
   & .vf-checkbox-container {
     flex: 1;
+    flex-basis: 30%;
   }
 }
 
@@ -138,6 +174,11 @@ const formData = ref(null);
 
 pre {
   white-space: pre-wrap;
+}
+
+.scrollable {
+  overflow-y: auto;
+  max-height: 300px;
 }
 </style>
 <!-- Ignore these -->
