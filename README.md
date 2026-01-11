@@ -1,8 +1,38 @@
-# Vueform Hierarchy Checkboxes Plugin
+# Vueform Select All Checkboxes Plugin
 
 This plugin enables complex "Select All" logic for Vueform. It handles bi-directional synchronization (Parent $\leftrightarrow$ Child) and prevents infinite loops using an internal locking mechanism. It supports standard checkboxes, checkbox groups, and nested structures.
 
-## Configuration & Concepts
+## 📦 Installation
+
+### 1. Create the Plugin File
+Create a file named `CheckboxSelectAll.js` inside your plugins directory (e.g., `./vueform/plugins/CheckboxSelectAll.js`) and paste the plugin code into it.
+
+### 2. Register in `vueform.config.js`
+Import the plugin and add it to the `plugins` array in your Vueform configuration file.
+
+```javascript
+// vueform.config.js
+import en from "@vueform/vueform/locales/en";
+import vueform from "@vueform/vueform/dist/vueform";
+import { defineConfig } from "@vueform/vueform";
+import "@vueform/vueform/dist/vueform.css";
+
+// 1. Import the custom plugin
+import CheckboxSelectAll from "./vueform/plugins/CheckboxSelectAll";
+
+export default defineConfig({
+  theme: vueform,
+  locales: { en },
+  locale: "en",
+  
+  // 2. Add it to the plugins array
+  plugins: [
+    CheckboxSelectAll
+  ],
+});
+```
+
+## ⚙️ Configuration & Concepts
 
 To set up the logic, you only need to configure three properties in your schema.
 
@@ -33,7 +63,7 @@ It designates one specific option within the `items` array as the "Select All" f
 
 ---
 
-## Usage Examples
+## 🚀 Usage Examples
 
 ### Example 1: Standard Checkbox Controlling Others
 A standalone "Select All" checkbox controlling separate checkbox elements.
