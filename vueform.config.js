@@ -4,8 +4,8 @@ import { defineConfig } from "@vueform/vueform";
 
 import "@vueform/vueform/dist/vueform.css";
 
-// Import custom plugins
-import CheckboxSelectAll from "./vueform/plugins/CheckboxSelectAll";
+// Import custom plugin
+import CheckboxSelectAll from "vueform-plugin-checkbox-select-all";
 
 export default defineConfig({
   theme: vueform,
