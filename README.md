@@ -4,10 +4,15 @@ This plugin enables complex "Select All" logic for Vueform. It handles bi-direct
 
 ## 📦 Installation
 
-### 1. Create the Plugin File
-Create a file named `CheckboxSelectAll.js` inside your plugins directory (e.g., `./vueform/plugins/CheckboxSelectAll.js`) and paste the plugin code into it.
+### 1. Install via NPM
+Run the following command in your project root:
+
+```bash
+npm install vueform-plugin-checkbox-select-all
+```
 
 ### 2. Register in `vueform.config.js`
+
 Import the plugin and add it to the `plugins` array in your Vueform configuration file.
 
 ```javascript
@@ -18,17 +23,15 @@ import { defineConfig } from "@vueform/vueform";
 import "@vueform/vueform/dist/vueform.css";
 
 // 1. Import the custom plugin
-import CheckboxSelectAll from "./vueform/plugins/CheckboxSelectAll";
+import CheckboxSelectAll from "vueform-plugin-checkbox-select-all";
 
 export default defineConfig({
   theme: vueform,
   locales: { en },
   locale: "en",
-  
+
   // 2. Add it to the plugins array
-  plugins: [
-    CheckboxSelectAll
-  ],
+  plugins: [CheckboxSelectAll],
 });
 ```
 
@@ -37,35 +40,39 @@ export default defineConfig({
 To set up the logic, you only need to configure three properties in your schema.
 
 ### A. Downstream (Parent $\rightarrow$ Children)
+
 **Used on the Parent (Controller).**
 When the parent is clicked, it forces all defined children to match its state.
 
--   **Prop:** `controls`
--   **Type:** `Array<String>`
--   **Value:** A list of **full paths** to the child elements.
+- **Prop:** `controls`
+- **Type:** `Array<String>`
+- **Value:** A list of **full paths** to the child elements.
 
 ### B. Upstream (Child $\rightarrow$ Parent)
+
 **Used on the Child (Controlled).**
 When a child is changed, it checks if all its siblings are selected. If yes, it checks the parent. If no, it unchecks the parent.
 
--   **Prop:** `controller`
--   **Type:** `String`
--   **Value:** The **full path** to the parent element.
+- **Prop:** `controller`
+- **Type:** `String`
+- **Value:** The **full path** to the parent element.
 
 ### C. Internal Group "All"
+
 **Used strictly inside a `checkboxgroup`.**
 It designates one specific option within the `items` array as the "Select All" for that specific group.
 
--   **Prop:** `groupController`
--   **Type:** `Boolean`
--   **Value:** `true`
--   **Location:** Inside an object in the `items` array.
+- **Prop:** `groupController`
+- **Type:** `Boolean`
+- **Value:** `true`
+- **Location:** Inside an object in the `items` array.
 
 ---
 
 ## 🚀 Usage Examples
 
 ### Example 1: Standard Checkbox Controlling Others
+
 A standalone "Select All" checkbox controlling separate checkbox elements.
 
 ```javascript
@@ -86,7 +93,7 @@ A standalone "Select All" checkbox controlling separate checkbox elements.
         type: 'checkbox',
         text: 'Option 1',
         // Tell child who controls it (Upstream)
-        controller: 'selectAll' 
+        controller: 'selectAll'
       },
       option2: {
         type: 'checkbox',
@@ -100,6 +107,7 @@ A standalone "Select All" checkbox controlling separate checkbox elements.
 ```
 
 ### Example 2: Parent Controlling a CheckboxGroup
+
 A standalone checkbox controlling a whole group list.
 
 ```javascript
@@ -123,6 +131,7 @@ A standalone checkbox controlling a whole group list.
 ```
 
 ### Example 3: CheckboxGroup with Internal "Select All"
+
 A group that contains its own "All" option inside the list.
 
 ```javascript
@@ -131,9 +140,9 @@ A group that contains its own "All" option inside the list.
     type: 'checkboxgroup',
     items: [
       // 1. The Internal Controller
-      { 
-        value: 'all', 
-        label: 'Select All', 
+      {
+        value: 'all',
+        label: 'Select All',
         groupController: true // <--- The Magic Prop
       },
       // 2. The Siblings
@@ -145,6 +154,7 @@ A group that contains its own "All" option inside the list.
 ```
 
 ### Example 4: Complex Nested Structure
+
 A group that contains its own "All" option inside the list, and a main checkbox controlling the group.
 
 ```javascript
@@ -155,7 +165,7 @@ A group that contains its own "All" option inside the list, and a main checkbox 
     content: "<div>Select Fields to be Exported</div>",
     columns: { container: 9 },
   },
-  
+
   // --- MAIN CONTROLLER ---
   selectAll: {
     type: "checkbox",
@@ -168,7 +178,7 @@ A group that contains its own "All" option inside the list, and a main checkbox 
       "container.reqFieldsCheckboxes",
     ],
   },
-  
+
   container: {
     type: "group",
     class: "dimBackground_50 scrollable",
@@ -178,7 +188,7 @@ A group that contains its own "All" option inside the list, and a main checkbox 
         tag: "p",
         content: "<p>Requisition Details</p>",
       },
-      
+
       // --- GROUP 1 ---
       reqDetailsCheckboxes: {
         type: "checkboxgroup",
@@ -196,13 +206,13 @@ A group that contains its own "All" option inside the list, and a main checkbox 
           { value: "2", label: "Date Created" },
         ],
       },
-      
+
       reqFieldsLabel: {
         type: "static",
         tag: "p",
         content: "<p>Requisition Fields</p>",
       },
-      
+
       // --- GROUP 2 ---
       reqFieldsCheckboxes: {
         type: "checkboxgroup",
@@ -222,7 +232,7 @@ A group that contains its own "All" option inside the list, and a main checkbox 
       },
     },
   },
-  
+
   saveSelections: {
     type: "checkbox",
     text: "Save My Selections",
