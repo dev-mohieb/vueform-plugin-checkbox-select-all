@@ -1,75 +1,201 @@
-# Nuxt Minimal Starter
+# Vueform Hierarchy Checkboxes Plugin
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+This plugin enables complex "Select All" logic for Vueform. It handles bi-directional synchronization (Parent $\leftrightarrow$ Child) and prevents infinite loops using an internal locking mechanism. It supports standard checkboxes, checkbox groups, and nested structures.
 
-## Setup
+## Configuration & Concepts
 
-Make sure to install dependencies:
+To set up the logic, you only need to configure three properties in your schema.
 
-```bash
-# npm
-npm install
+### A. Downstream (Parent $\rightarrow$ Children)
+**Used on the Parent (Controller).**
+When the parent is clicked, it forces all defined children to match its state.
 
-# pnpm
-pnpm install
+-   **Prop:** `controls`
+-   **Type:** `Array<String>`
+-   **Value:** A list of **full paths** to the child elements.
 
-# yarn
-yarn install
+### B. Upstream (Child $\rightarrow$ Parent)
+**Used on the Child (Controlled).**
+When a child is changed, it checks if all its siblings are selected. If yes, it checks the parent. If no, it unchecks the parent.
 
-# bun
-bun install
+-   **Prop:** `controller`
+-   **Type:** `String`
+-   **Value:** The **full path** to the parent element.
+
+### C. Internal Group "All"
+**Used strictly inside a `checkboxgroup`.**
+It designates one specific option within the `items` array as the "Select All" for that specific group.
+
+-   **Prop:** `groupController`
+-   **Type:** `Boolean`
+-   **Value:** `true`
+-   **Location:** Inside an object in the `items` array.
+
+---
+
+## Usage Examples
+
+### Example 1: Standard Checkbox Controlling Others
+A standalone "Select All" checkbox controlling separate checkbox elements.
+
+```javascript
+{
+  // 1. The Parent
+  selectAll: {
+    type: 'checkbox',
+    text: 'Select All',
+    // Tell parent who to control (Downstream)
+    // NOTE: Must be the full path to find the element via form$.el(fullPath)
+    controls: ['container.option1', 'container.option2']
+  },
+  container: {
+    type: 'group',
+    schema: {
+      // 2. The Children
+      option1: {
+        type: 'checkbox',
+        text: 'Option 1',
+        // Tell child who controls it (Upstream)
+        controller: 'selectAll' 
+      },
+      option2: {
+        type: 'checkbox',
+        text: 'Option 2',
+        // Tell child who controls it (Upstream)
+        controller: 'selectAll'
+      }
+    }
+  }
+}
 ```
 
-## Development Server
+### Example 2: Parent Controlling a CheckboxGroup
+A standalone checkbox controlling a whole group list.
 
-Start the development server on `http://localhost:3000`:
+```javascript
+{
+  // 1. The Parent
+  selectAll: {
+    type: 'checkbox',
+    controls: ['myGroup'] // Points to the group element
+  },
 
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+  // 2. The Child (Group)
+  myGroup: {
+    type: 'checkboxgroup',
+    controller: 'selectAll', // Points back to parent
+    items: [
+      { value: 'a', label: 'A' },
+      { value: 'b', label: 'B' }
+    ]
+  }
+}
 ```
 
-## Production
+### Example 3: CheckboxGroup with Internal "Select All"
+A group that contains its own "All" option inside the list.
 
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+```javascript
+{
+  myGroup: {
+    type: 'checkboxgroup',
+    items: [
+      // 1. The Internal Controller
+      { 
+        value: 'all', 
+        label: 'Select All', 
+        groupController: true // <--- The Magic Prop
+      },
+      // 2. The Siblings
+      { value: 'a', label: 'Item A' },
+      { value: 'b', label: 'Item B' }
+    ]
+  }
+}
 ```
 
-Locally preview production build:
+### Example 4: Complex Nested Structure
+A group that contains its own "All" option inside the list, and a main checkbox controlling the group.
 
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
+```javascript
+{
+  selectAllText: {
+    type: "static",
+    tag: "p",
+    content: "<div>Select Fields to be Exported</div>",
+    columns: { container: 9 },
+  },
+  
+  // --- MAIN CONTROLLER ---
+  selectAll: {
+    type: "checkbox",
+    text: "All Fields",
+    columns: { container: 3 },
+    align: "left",
+    // EXTERNAL CONTROL: Controls the two groups
+    controls: [
+      "container.reqDetailsCheckboxes",
+      "container.reqFieldsCheckboxes",
+    ],
+  },
+  
+  container: {
+    type: "group",
+    class: "dimBackground_50 scrollable",
+    schema: {
+      reqDetailsLabel: {
+        type: "static",
+        tag: "p",
+        content: "<p>Requisition Details</p>",
+      },
+      
+      // --- GROUP 1 ---
+      reqDetailsCheckboxes: {
+        type: "checkboxgroup",
+        class: "flex-container",
+        // EXTERNAL LINK: Points to Main Controller
+        controller: "selectAll",
+        items: [
+          {
+            // INTERNAL CONTROL: Marks this as the group's "All" button
+            value: "0",
+            label: "All",
+            groupController: true,
+          },
+          { value: "1", label: "Requisition ID" },
+          { value: "2", label: "Date Created" },
+        ],
+      },
+      
+      reqFieldsLabel: {
+        type: "static",
+        tag: "p",
+        content: "<p>Requisition Fields</p>",
+      },
+      
+      // --- GROUP 2 ---
+      reqFieldsCheckboxes: {
+        type: "checkboxgroup",
+        class: "flex-container",
+        // EXTERNAL LINK: Points to Main Controller
+        controller: "selectAll",
+        items: [
+          {
+            // INTERNAL CONTROL
+            value: "0",
+            label: "All",
+            groupController: true,
+          },
+          { value: "1", label: "Field ID" },
+          { value: "2", label: "Field Created" },
+        ],
+      },
+    },
+  },
+  
+  saveSelections: {
+    type: "checkbox",
+    text: "Save My Selections",
+  },
+}
 ```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
