@@ -1,5 +1,11 @@
 # Vueform Select All Checkboxes Plugin
 
+<p>
+  <a href="https://www.npmjs.com/package/vueform-plugin-checkbox-select-all"><img src="https://img.shields.io/npm/v/vueform-plugin-checkbox-select-all?style=flat&colorA=18181B&colorB=28CF8D" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/vueform-plugin-checkbox-select-all"><img src="https://img.shields.io/npm/dm/vueform-plugin-checkbox-select-all?style=flat&colorA=18181B&colorB=28CF8D" alt="Downloads"></a>
+  <img src="https://img.shields.io/npm/l/vueform-plugin-checkbox-select-all?style=flat&colorA=18181B&colorB=28CF8D" alt="License">
+</p>
+
 This plugin enables complex "Select All" logic for Vueform. It handles bi-directional synchronization (Parent $\leftrightarrow$ Child) and prevents infinite loops using an internal locking mechanism. It supports standard checkboxes, checkbox groups, and nested structures.
 
 ## 📦 Installation
